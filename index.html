@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pricing Service Demo (JSON)</title>
+<style>
+body { font-family: system-ui, sans-serif; margin: 40px; }
+input, button { padding: 6px 10px; margin: 4px; }
+pre { margin-top: 20px; padding: 16px; background: #f6f8fa; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<h2>Pricing Service Demo (JSON)</h2>
+<p>Click the button to calculate the price using WebAssembly via JSON.</p>
+
+<input id="price" type="number" placeholder="Price" value="120">
+<label>
+    Premium:
+    <input id="premium" type="checkbox" checked>
+</label>
+<button id="run">Calculate Price</button>
+
+<pre id="output">Result will appear here.</pre>
+
+<script src="PricingService.js"></script>
+
+<script>
+GraalVM.run([]).then(() => {
+    const button = document.getElementById("run");
+    const output = document.getElementById("output");
+
+    button.addEventListener("click", () => {
+        const request = {
+            price: parseInt(document.getElementById("price").value),
+            premium: document.getElementById("premium").checked
+        };
+
+        try {
+            const resultStr = globalThis.pricingService(JSON.stringify(request));
+            const result = JSON.parse(resultStr);
+            output.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+            console.error(err);
+            output.textContent = "Error: " + err;
+        }
+    });
+});
+</script>
+
+</body>
+</html>
