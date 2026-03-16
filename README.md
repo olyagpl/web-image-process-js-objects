@@ -13,7 +13,7 @@ You can run this small backend service in a browser, Node.js, or on the [GraalJS
 * An [Early Access build](https://github.com/graalvm/oracle-graalvm-ea-builds/releases) of Oracle GraalVM 25 (25e1) or later.
 * All [prerequisites](https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites) required for Native Image building.
 * [Binaryen toolchain](https://github.com/WebAssembly/binaryen) version 119 or later, available on the system path. Web Image uses `wasm-as` from `binaryen` as its assembler.
-  * **macOS**: It is recommended to install Binaryen using Homebrew, as the pre-built binaries from GitHub may be quarantined by the operpating system:
+  * **macOS**: It is recommended to install Binaryen using Homebrew, as the pre-built binaries from GitHub may be quarantined by the operating system:
     ```bash
     brew install binaryen
     ```
@@ -145,14 +145,16 @@ GraalVM.run([]).then(() => {
     const output = document.getElementById("output");
 
     button.addEventListener("click", () => {
+        const priceInput = parseInt(document.getElementById("price").value, 10);
+        const premiumInput = document.getElementById("premium").checked;
 
         const request = new Object();
         request.operation = "discount";
-        request.price = 120;
+        request.price = Number.isNaN(priceInput) ? 0 : priceInput;
 
         request.user = new Object();
         request.user.name = "Alex";
-        request.user.premium = true;
+        request.user.premium = premiumInput;
 
         const result = globalThis.pricingService(request);
         output.innerText = JSON.stringify(result, null, 2);
@@ -180,13 +182,16 @@ GraalVM.run([]).then(() => {
 - Current Web Image API works with object literals and runtime-created JavaScript objects.
 Thus using `new Object()` ensures the object is represented in a way the Java expects:
     ```js
+    const priceInput = parseInt(document.getElementById("price").value, 10);
+    const premiumInput = document.getElementById("premium").checked;
+
     const request = new Object();
     request.operation = "discount";
-    request.price = 120;
+    request.price = Number.isNaN(priceInput) ? 0 : priceInput;
 
     request.user = new Object();
     request.user.name = "Alex";
-    request.user.premium = true;
+    request.user.premium = premiumInput;
     ```
 
 ### Conclusion

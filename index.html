@@ -31,14 +31,16 @@ GraalVM.run([]).then(() => {
     const output = document.getElementById("output");
 
     button.addEventListener("click", () => {
+        const priceInput = parseInt(document.getElementById("price").value, 10);
+        const premiumInput = document.getElementById("premium").checked;
 
         const request = new Object();
         request.operation = "discount";
-        request.price = 120;
+        request.price = Number.isNaN(priceInput) ? 0 : priceInput;
 
         request.user = new Object();
         request.user.name = "Alex";
-        request.user.premium = true;
+        request.user.premium = premiumInput;
 
         const result = globalThis.pricingService(request);
         output.innerText = JSON.stringify(result, null, 2);
