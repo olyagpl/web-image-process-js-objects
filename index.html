@@ -31,19 +31,17 @@ GraalVM.run([]).then(() => {
     const output = document.getElementById("output");
 
     button.addEventListener("click", () => {
-        const request = {
-            price: parseInt(document.getElementById("price").value),
-            premium: document.getElementById("premium").checked
-        };
 
-        try {
-            const resultStr = globalThis.pricingService(JSON.stringify(request));
-            const result = JSON.parse(resultStr);
-            output.textContent = JSON.stringify(result, null, 2);
-        } catch (err) {
-            console.error(err);
-            output.textContent = "Error: " + err;
-        }
+        const request = new Object();
+        request.operation = "discount";
+        request.price = 120;
+
+        request.user = new Object();
+        request.user.name = "Alex";
+        request.user.premium = true;
+
+        const result = globalThis.pricingService(request);
+        output.innerText = JSON.stringify(result, null, 2);
     });
 });
 </script>

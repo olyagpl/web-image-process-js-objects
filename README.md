@@ -13,7 +13,7 @@ You can run this small backend service in a browser, Node.js, or on the [GraalJS
 * An [Early Access build](https://github.com/graalvm/oracle-graalvm-ea-builds/releases) of Oracle GraalVM 25 (25e1) or later.
 * All [prerequisites](https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites) required for Native Image building.
 * [Binaryen toolchain](https://github.com/WebAssembly/binaryen) version 119 or later, available on the system path. Web Image uses `wasm-as` from `binaryen` as its assembler.
-  * **macOS**: It is recommended to install Binaryen using Homebrew, as the pre-built binaries from GitHub may be quarantined by the operating system:
+  * **macOS**: It is recommended to install Binaryen using Homebrew, as the pre-built binaries from GitHub may be quarantined by the operpating system:
     ```bash
     brew install binaryen
     ```
