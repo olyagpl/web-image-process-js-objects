@@ -1,7 +1,7 @@
 # Web Image: Export Java Method with JavaScript Objects
 
 Unlike the [Export Java Method Example](../export-java-function/) which exchanges primitive values like numbers, this demo illustrates how you can work with **structured data objects**: JavaScript sends a request object, Java processes it, and returns a structured response object, via WebAssembly.
-What is important with the current Web Image API, for exchanging objects you need to **cast values explicitly**.
+What is important with the current Web Image API, for exchanging objects you need to **cast values explicitly** and then convert wrapper values to Java primitives/strings.
 
 This tiny in-browser service is compiled to WebAssembly thanks to  **Web Image** - an experimental backend for [GraalVM Native Image](https://www.graalvm.org/latest/reference-manual/native-image/) that compiles a Java application ahead-of-time and produces a Wasm module with a JavaScript wrapper.
 You can run this small backend service in a browser, Node.js, or on the [GraalJS-based](https://github.com/oracle/graaljs/tree/master/graal-nodejs) Node runtime.
@@ -55,8 +55,10 @@ JavaScript sends a request object, Java processes it, and returns a response obj
 ```java
 import java.util.function.Function;
 import org.graalvm.webimage.api.JS;
+import org.graalvm.webimage.api.JSBoolean;
 import org.graalvm.webimage.api.JSObject;
 import org.graalvm.webimage.api.JSNumber;
+import org.graalvm.webimage.api.JSString;
 
 public class PricingService {
 
@@ -67,12 +69,12 @@ public class PricingService {
         export((request) -> {
 
 
-            String operation = (String) request.get("operation");
+            String operation = ((JSString) request.get("operation")).asString();
             int price = ((JSNumber) request.get("price")).asInt();
 
             JSObject user = (JSObject) request.get("user");
-            String name = (String) user.get("name");
-            boolean premium = (boolean) user.get("premium");
+            String name = ((JSString) user.get("name")).asString();
+            boolean premium = ((JSBoolean) user.get("premium")).asBoolean();
 
             int discount = 0;
 
@@ -105,19 +107,21 @@ public class PricingService {
 ```java
 export((request) -> { ... });
 ```
-* The exported function is a Java lambda, and accepts a JavaScript object (`Function<JSObject, JSObject>`).
+* The exported function is a Java lambda and accepts a JavaScript object (`Function<JSObject, JSObject>`).
 * JavaScript sends an object, Java processes it, creates, and returns another object.
 
 ### Reading Properties from a Request Object
 
 Next Java reads properties from a JavaScript `request` object.
-For accessing JavaScript objects, you need to **cast values explicitly**.
+For accessing JavaScript objects, you need to **cast values explicitly**, then convert wrappers to Java values.
 
 ```java
-String operation = (String) request.get("operation");
+String operation = ((JSString) request.get("operation")).asString();
 int price = ((JSNumber) request.get("price")).asInt();
 
 JSObject user = (JSObject) request.get("user");
+String name = ((JSString) user.get("name")).asString();
+boolean premium = ((JSBoolean) user.get("premium")).asBoolean();
 ```
 Notice also that nested objects can also be accessed.
 The `request` object is passed to Java as a **JavaScript proxy object**.
@@ -164,8 +168,8 @@ GraalVM.run([]).then(() => {
 ## Current Web Image API: Important Notes and Limitations
 
 - For accessing JavaScript objects, you need to **cast values explicitly**.
-    - Cast `request.get("field")` to the expected type: `String`, `Boolean`, `JSNumber`, or `JSObject`.
-    - For `JSNumber`, call `.asInt()` or `.asDouble()`.
+    - Cast `request.get("field")` to wrapper types: `JSString`, `JSBoolean`, `JSNumber`, or `JSObject`.
+    - Then convert wrappers with `.asString()`, `.asBoolean()`, `.asInt()`, or `.asDouble()`.
     - For `JSObject` nested fields, call `get()` and cast again.
 
 - The generated runtime wrapper should be loaded in HTML before the `GraalVM.run` call:
