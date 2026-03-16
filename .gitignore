@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Build artifacts
+*.class
+*.js
+*.js.wasm
+*.js.wat
+
+# Logs
+*.log
+
+# IDE files
+.idea/
+*.iml
+.vscode/
